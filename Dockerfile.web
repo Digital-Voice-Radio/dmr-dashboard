@@ -1,7 +1,5 @@
-#!/bin/sh
 ###############################################################################
 # Copyright (C) 2025 Jared Quinn, VK2WAY <jared@jaredquinn.info>
-# Copyright (C) 2020 Simon Adlem, G7RZU <g7rzu@gb7fr.org.uk>  
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -17,29 +15,31 @@
 #   along with this program; if not, write to the Free Software Foundation,
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 ###############################################################################
+FROM python:3.9-alpine
 
-cd /mon
-echo ' _                                     '
-echo '| \ o  _  o _|_  _. | \  / _  o  _  _  '
-echo '|_/ | (_| |  |_ (_| |  \/ (_) | (_ (/_ '
-echo '       _|                              '
-echo
-export MONITOR_CONFIG=${MONITOR_CONFIG:=/mon/mon.cfg}
-echo Monitor Configuration: ${MONITOR_CONFIG}
-echo Data Directory       : /data
-echo
+RUN mkdir /mon
 
-if [ ! -d /data ]
-then
-	echo No Data Directory available at /data for my database.
-	exit 99
-fi
-if [ ! -f /data/mon.db ]
-then
-	echo Database does not exist.  Creating tables.
-	python /mon/mon_db.py
-fi
+FROM php:apache
+COPY ./html/ /var/www/html/
+COPY ./docker/config/apache.conf /etc/apache2/sites-available/000-default.conf
+COPY ./docker/entrypoint-apache /entrypoint
 
-cd /mon
-python3 monitor.py
+COPY mon.cfg /opt
+
+VOLUME /config
+VOLUME /data
+
+RUN 	mkdir /opt/monitor && \
+	chmod -R 755 /opt/monitor  && \
+	a2enmod proxy rewrite proxy_http proxy_wstunnel	ssl socache_shmcb headers && \
+	a2dissite default-ssl.conf 
+
+RUN [ -f /opt/mon.cfg ] || mv /opt/mon.cfg /config 
+
+
+WORKDIR /var/www/html
+COPY html /var/www/html
+ENTRYPOINT [  "/entrypoint" ]
+
+RUN echo DONE
 

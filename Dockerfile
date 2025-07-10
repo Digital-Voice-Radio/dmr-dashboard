@@ -1,7 +1,5 @@
-#!/bin/sh
 ###############################################################################
 # Copyright (C) 2025 Jared Quinn, VK2WAY <jared@jaredquinn.info>
-# Copyright (C) 2020 Simon Adlem, G7RZU <g7rzu@gb7fr.org.uk>  
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -17,29 +15,19 @@
 #   along with this program; if not, write to the Free Software Foundation,
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 ###############################################################################
+FROM python:3.9-alpine
 
-cd /mon
-echo ' _                                     '
-echo '| \ o  _  o _|_  _. | \  / _  o  _  _  '
-echo '|_/ | (_| |  |_ (_| |  \/ (_) | (_ (/_ '
-echo '       _|                              '
-echo
-export MONITOR_CONFIG=${MONITOR_CONFIG:=/mon/mon.cfg}
-echo Monitor Configuration: ${MONITOR_CONFIG}
-echo Data Directory       : /data
-echo
+RUN mkdir /mon
+COPY . /mon
 
-if [ ! -d /data ]
-then
-	echo No Data Directory available at /data for my database.
-	exit 99
-fi
-if [ ! -f /data/mon.db ]
-then
-	echo Database does not exist.  Creating tables.
-	python /mon/mon_db.py
-fi
+COPY ./docker/entrypoint-monitor /
+RUN chmod a+rx /mon/entrypoint-monitor
 
-cd /mon
-python3 monitor.py
+ENTRYPOINT [ "/entrypoint-monitor" ]
+
+RUN pip install -r /mon/requirements.txt
+
+WORKDIR /mon
+
+
 

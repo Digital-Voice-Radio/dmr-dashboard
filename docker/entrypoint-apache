@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo export MONITOR_WS=${MONTIOR_WS} >> /etc/apache2/envvars
+echo export MASTER_API=${MASTER_API} >> /etc/apache2/envvars
+
+exec docker-php-entrypoint apache2-foreground
+
+

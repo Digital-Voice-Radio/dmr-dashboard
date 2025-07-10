@@ -1,0 +1,18 @@
+
+version: '2.4' 
+services:
+
+    monitor:
+        container_name: monitor
+        image: 'docker.dvdmr.org/digitalvoice/monitor:latest'
+        restart: "unless-stopped"
+        volumes:
+            - '/data/master/:/config'
+            - '/data/master/:/data'
+            - '/data/log/:/log'
+        ports:
+          - 9000:9000/tcp # websocket port
+        environment:
+          - MONITOR_CONFIG=/config/mon.cfg
+
+
