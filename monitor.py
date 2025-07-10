@@ -47,7 +47,9 @@ OPCODE = {
     }
 
 # Make config
-CONF = mk_config("fdmr-mon.cfg")
+import os
+config_file = os.environ.get('MONITOR_CONFIG', '/config/mon.cfg')
+CONF = mk_config(config_file)
 
 # Global Variables:
 CONFIG = {}
@@ -103,7 +105,7 @@ UPDT_FILES = (
     (CONF["FILES"]["PEER"], CONF["FILES"]["PEER_URL"], "peer_ids"),
     (CONF["FILES"]["SUBS"], CONF["FILES"]["SUBS_URL"], "subscriber_ids"),
     (CONF["FILES"]["TGID"], CONF["FILES"]["TGID_URL"], "talkgroup_ids")
-    )
+)
 
 
 # LONG VERSION - MAKES A FULL DICTIONARY OF INFORMATION BASED ON TYPE OF ALIAS FILE
@@ -138,6 +140,8 @@ def fill_table(_path, _file, _table, wipe_tbl=True):
                         pass
 
             elif _table == "subscriber_ids":
+                count = len(records)
+                logger.info(f"there were {count} records")
                 for record in records:
                     # Try to craete a string name regardless of existing data
                     if "surname" in record and "fname"in record:
@@ -156,6 +160,7 @@ def fill_table(_path, _file, _table, wipe_tbl=True):
                         pass
 
             elif _table == "talkgroup_ids":
+                #print(records)
                 for record in records:
                     try:
                         temp_lst.append((int(record["id"]), record["callsign"]))
@@ -168,6 +173,7 @@ def fill_table(_path, _file, _table, wipe_tbl=True):
 
     except Exception as err:
         logger.error(f"fill_table error: {err}, {type(err)}")
+        raise(err)
 
 
 @inlineCallbacks
@@ -1138,6 +1144,7 @@ class dashboardFactory(WebSocketServerFactory):
 
     def broadcast(self, msg, group):
         logger.debug(f"broadcasting message to: {self.clients[group]}")
+        #print(msg)
         for client in self.clients[group]:
             client.sendMessage(msg.encode("utf8"))
             logger.debug(f"message sent to {client.peer}")
@@ -1198,7 +1205,7 @@ if __name__ == "__main__":
                 "\n\n\tFDMR-Monitor CS8ABG 2024\n\n")
 
     # Create an instance of MoniDB
-    db_conn = MoniDB("mon.db")
+    db_conn = MoniDB("/data/mon.db")
 
     # Jinja2 Stuff
     env = Environment(
@@ -1247,16 +1254,8 @@ if __name__ == "__main__":
 
     logger.info(f'Starting webserver on port {CONF["WS"]["WS_PORT"]} with SSL = {CONF["WS"]["USE_SSL"]}')
 
-    if CONF["WS"]["USE_SSL"]:
-        from twisted.internet import ssl
-        certificate = ssl.DefaultOpenSSLContextFactory(CONF["WS"]["P2F_PKEY"], CONF["WS"]["P2F_CERT"])
-        dashboard_server = dashboardFactory(f'wss://*:{CONF["WS"]["WS_PORT"]}')
-        dashboard_server.protocol = dashboard
-        reactor.listenSSL(CONF["WS"]["WS_PORT"], dashboard_server, certificate)
-
-    else:
-        dashboard_server = dashboardFactory(f'ws://*:{CONF["WS"]["WS_PORT"]}')
-        dashboard_server.protocol = dashboard
-        reactor.listenTCP(CONF["WS"]["WS_PORT"], dashboard_server)
+    dashboard_server = dashboardFactory(f'ws://*:{CONF["WS"]["WS_PORT"]}')
+    dashboard_server.protocol = dashboard
+    reactor.listenTCP(CONF["WS"]["WS_PORT"], dashboard_server)
 
     reactor.run()

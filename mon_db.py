@@ -297,10 +297,11 @@ if __name__ == '__main__':
                         datefmt='%Y-%m-%d %H:%M:%S')
 
     # Create an instance of MoniDB
-    test_db = MoniDB("mon.db")
+    test_db = MoniDB("/data/mon.db")
 
     # Create tables
     test_db.create_tables()
 
     reactor.callLater(5, reactor.stop)
     reactor.run()
+
