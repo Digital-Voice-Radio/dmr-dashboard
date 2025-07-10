@@ -1202,7 +1202,7 @@ if __name__ == "__main__":
     logger.info("monitor.py starting up")
     logger.info("\n\n\tCopyright (c) 2016-2022\n\tThe Regents of the K0USY Group. All rights "
                 "reserved.\n\n\tPython 3 port:\n\t2019 Steve Miller, KC1AWV <smiller@kc1awv.net>"
-                "\n\n\tFDMR-Monitor CS8ABG 2024\n\n")
+                "\n\n\tFDMR-Monitor CS8ABG 2024\n\tDVDMR Monitor VK2WAY 2025\n\n")
 
     # Create an instance of MoniDB
     db_conn = MoniDB("/data/mon.db")
@@ -1250,7 +1250,7 @@ if __name__ == "__main__":
 
     # Connect to HBlink
     reactor.connectTCP(
-        CONF["FDMR_CXN"]["FD_IP"], CONF["FDMR_CXN"]["FD_PORT"], reportClientFactory())
+        CONF["CXN"]["IP"], CONF["CXN"]["PORT"], reportClientFactory())
 
     logger.info(f'Starting webserver on port {CONF["WS"]["WS_PORT"]} with SSL = {CONF["WS"]["USE_SSL"]}')
 

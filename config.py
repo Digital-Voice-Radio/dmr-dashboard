@@ -11,7 +11,7 @@ def mk_config(cfg_file):
 
     CONF = {
         "GLOBAL": {},
-        "FDMR_CXN": {},
+        "CXN": {},
         "OPB_FLTR": {},
         "FILES": {},
         "LOG": {},
@@ -39,10 +39,10 @@ def mk_config(cfg_file):
                     "EMPTY_MASTERS": conf.getboolean(section, "EMPTY_MASTERS", fallback=False),
                     "TGC_ROWS": conf.getint(section, "TGCOUNT_ROWS", fallback=20)
                     }
-            elif section == "FDMR CONNECTION":
-                CONF["FDMR_CXN"] = {
-                    "FD_IP": conf.get(section, "FDMR_IP", fallback="127.0.0.1"),
-                    "FD_PORT": conf.getint(section, "FDMR_PORT", fallback=4321),
+            elif section == "MASTER":
+                CONF["CXN"] = {
+                    "IP": conf.get(section, "IP", fallback="127.0.0.1"),
+                    "PORT": conf.getint(section, "PORT", fallback=4321),
                     }
             elif section == "OPB FILTER":
                 CONF["OPB_FLTR"] = {
