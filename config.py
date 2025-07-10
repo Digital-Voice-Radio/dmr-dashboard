@@ -55,7 +55,7 @@ def mk_config(cfg_file):
                     "PATH": conf.get(section, "FILES_PATH", fallback="./data/"),
                     "SUBS": conf.get(section, "SUBSCRIBER_FILE", fallback="local_subscriber_ids.csv"),
                     "PEER": conf.get(section, "PEER_FILE", fallback="rptrs.json"),
-                    "TGID": conf.get(section, "TGID_FILE", fallback="UKtalkgroup_ids.json"),
+                    "TGID": conf.get(section, "TGID_FILE", fallback="talkgroup_ids.json"),
                     "LCL_SUBS": conf.get(section, "LOCAL_SUB_FILE"),
                     "LCL_PEER": conf.get(section, "LOCAL_PEER_FILE"),
                     "LCL_TGID": conf.get(section, "LOCAL_TGID_FILE"),
@@ -67,21 +67,14 @@ def mk_config(cfg_file):
             elif section == "LOGGER":
                 CONF["LOG"] = {
                     "PATH": conf.get(section, "LOG_PATH", fallback="./log"),
-                    "LOG_FILE": conf.get(section, "LOG_FILE", fallback="FDMR-Monitor"),
+                    "LOG_FILE": conf.get(section, "LOG_FILE", fallback="Monitor"),
                     "LOG_LEVEL": conf.get(section, "LOG_LEVEL", fallback="INFO"),
                     "P2F_LOG": Path(conf[section]["LOG_PATH"], conf[section]["LOG_FILE"])
                     }
             elif section == "WEBSOCKET SERVER":
                 CONF["WS"] = {
                     "WS_PORT": conf.getint(section, "WEBSOCKET_PORT", fallback=9000),
-                    "USE_SSL": conf.getboolean(section, "USE_SSL", fallback=False),
-                    "SSL_PATH": conf.get(section, "SSL_PATH", fallback="./ssl"),
-                    "SSL_CERT": conf.get(section, "SSL_CERTIFICATE", fallback="cert.pem"),
-                    "P2F_CERT": Path(conf["WEBSOCKET SERVER"]["SSL_PATH"],
-                                     conf["WEBSOCKET SERVER"]["SSL_CERTIFICATE"]),
-                    "SSL_PKEY": conf.get(section, "SSL_PRIVATEKEY", fallback="key.pem"),
-                    "P2F_PKEY": Path(conf["WEBSOCKET SERVER"]["SSL_PATH"],
-                                     conf["WEBSOCKET SERVER"]["SSL_PRIVATEKEY"]),
+                    "USE_SSL": False,
                     "FREQ": conf.getint(section, "FREQUENCY", fallback=5),
                     "CLT_TO": conf.getint(section, "CLIENT_TIMEOUT", fallback=0)
                     }
