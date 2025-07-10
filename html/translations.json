@@ -27,8 +27,8 @@
         "de": "Verknüpfte Systeme"
     },
     "nav_statg": {
-        "en": "Static TG's",
-        "pt": "TG's Estaticos",
+        "en": "Static TGs",
+        "pt": "TGs Estaticos",
         "es": "TG Estáticos",
         "fr": "TG Statiques",
         "it": "TG Statici",
@@ -45,13 +45,13 @@
         "de": "OpenBridge"
     },
     "nav_tptg": {
-        "en": "TOP TG's",
-        "pt": "TOP TG's",
-        "es": "Top TG's",
-        "fr": "Top TG's",
-        "it": "Top TG's",
-        "nl": "Top TG's",
-        "de": "Top TG's"
+        "en": "TOP TGs",
+        "pt": "TOP TGs",
+        "es": "Top TGs",
+        "fr": "Top TGs",
+        "it": "Top TGs",
+        "nl": "Top TGs",
+        "de": "Top TGs"
     },
     "nav_mon": {
         "en": "Monitor",
@@ -73,7 +73,7 @@
     },
     "nav_tglst": {
         "en": "TG List",
-        "pt": "Lista TG's",
+        "pt": "Lista TGs",
         "es": "Lista de TG",
         "fr": "Liste des TG",
         "it": "Elenco TG",
@@ -702,13 +702,13 @@
         "de": "Aktive QSOs"
     },
     "ttptg": {
-        "en": "TOP TG's",
-        "pt": "TOP TG's",
-        "es": "Top TG's",
-        "fr": "Top TG's",
-        "it": "Top TG's",
-        "nl": "Top TG's",
-        "de": "Top TG's"
+        "en": "TOP TGs",
+        "pt": "TOP TGs",
+        "es": "Top TGs",
+        "fr": "Top TGs",
+        "it": "Top TGs",
+        "nl": "Top TGs",
+        "de": "Top TGs"
     },
     "ttptg_tgid": {
         "en": "TG ID",

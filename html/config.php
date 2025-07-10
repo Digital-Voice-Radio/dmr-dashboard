@@ -1,4 +1,4 @@
 <?php
-    $configFile = '/opt/FDMR-Monitor/fdmr-mon.cfg';
+    $configFile = getenv('MONITOR_CONFIG') ?: '/config/mon.cfg';
     $config = parse_ini_file($configFile, true);
 ?>

@@ -44,13 +44,14 @@ if (!isset($_SESSION['preloader_displayed'])) {
       <img class="animation__wobble" src="img/Logo_mini.png" alt="" height="60" width="60">
     </div>
     <?php endif; ?>
+
     <?php include 'include/navbar.php';?>
     <div class="content-wrapper"<?php if ($config['DASHBOARD']['BACKGROUND']) echo ' style="background-image: url(\'img/bk.jpg\'); background-attachment: fixed;"'; ?>>
       <div class="content-header">
         <div class="container">
           <div class="row mb-2 justify-content-center">
             <div class="col-sm-auto">
-              <img src="../img/logo.png" alt="FreeDMR" width="100%">
+	    <img src="<?php echo $config['DASHBOARD']['LOGO'] ?>" alt="<?php echo $config['DASHBOARD']['DASHTITLE'] ?>" width="100%">
             </div>
           </div>
         </div>
@@ -74,6 +75,7 @@ if (!isset($_SESSION['preloader_displayed'])) {
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
   <script src="scripts/mode.js"></script>
   <script src="plugins/adminlte/js/adminlte.min.js"></script>
+  <script src="css/overrides.css"></script>
   <script src="scripts/monitor.js"></script>
 </body>
 

@@ -16,7 +16,7 @@ window.onload = function () {
     tgcount_tbl = document.getElementById('tgcount');
     lsthrd_log_tbl = document.getElementById('lsthrd_log');
 
-    wsuri = (((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.hostname + ":9000");
+    wsuri = (((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.hostname + "/ws/");
 
     if ("WebSocket" in window) {
         sock = new WebSocket(wsuri);
