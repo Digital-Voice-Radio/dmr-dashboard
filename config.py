@@ -12,6 +12,7 @@ def mk_config(cfg_file):
     CONF = {
         "GLOBAL": {},
         "CXN": {},
+        "MQTT": {},
         "OPB_FLTR": {},
         "FILES": {},
         "LOG": {},
@@ -43,6 +44,13 @@ def mk_config(cfg_file):
                 CONF["CXN"] = {
                     "IP": conf.get(section, "IP", fallback="127.0.0.1"),
                     "PORT": conf.getint(section, "PORT", fallback=4321),
+                    }
+            elif section == "MQTT":
+                CONF["MQTT"] = {
+                        "BROKER_HOST": conf.get(section, "BROKER_HOST", fallback="127.0.0.1"),
+                        "BROKER_PORT": conf.get(section, "BROKER_PORT", fallback=1883),
+                        "ENABLED": conf.get(section, "ENABLED", fallback=False),
+                        "TOPIC": conf.get(section, "TOPIC", fallback="dmr"),
                     }
             elif section == "OPB FILTER":
                 CONF["OPB_FLTR"] = {

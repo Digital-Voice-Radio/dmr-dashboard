@@ -8,3 +8,4 @@ jinja2
 MarkupSafe
 pyOpenSSL
 service-identity
+paho-mqtt

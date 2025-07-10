@@ -6,3 +6,6 @@
 fdmr-mon.cfg
 _old
 venv
+bin
+lib
+pyvenv.cfg

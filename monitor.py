@@ -30,6 +30,8 @@ from config import mk_config
 from log import create_logger
 
 
+
+
 # Increase the value if HBlink link break occurs
 NetstringReceiver.MAX_LENGTH = 500000000
 
@@ -1222,6 +1224,7 @@ if __name__ == "__main__":
     htemplate = env.get_template("lasthrd_log.html")
     ttemplate = env.get_template("tgcount_table.html")
 
+
     # Start update loop
     update_stats = task.LoopingCall(build_stats)
     update_stats.start((CONF["WS"]["FREQ"])).addErrback(error_hdl)
@@ -1242,6 +1245,16 @@ if __name__ == "__main__":
     # Clean DB tables loop
     cdb_loop = task.LoopingCall(cleaning_loop)
     cdb_loop.start(900, now=False).addErrback(error_hdl)
+
+    mqttc = None
+    if CONF["MQTT"]["ENABLED"]:
+        import paho.mqtt.client as mqtt
+        mqttc = mqtt.Client()
+        logger.info(f'Connecting to MQTT Broker on port {CONF["MQTT"]["BROKER_HOST"]}:{CONF["MQTT"]["BROKER_PORT"]}')
+        mqttc.connect(CONF["MQTT"]["BROKER_HOST"], CONF["MQTT"]["BROKER_PORT"], 60)
+
+        task.LoopingCall(mqttc.loop_misc).start(5)
+        task.LoopingCall(mqttc.loop_read).start(0.1)
 
     # Update local files at start
     reactor.callLater(3, update_local)
