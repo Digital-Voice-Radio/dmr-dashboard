@@ -18,14 +18,16 @@
 FROM python:3.9-alpine
 
 RUN mkdir /mon
-COPY . /mon
+
+COPY requirements.txt /tmp
+RUN pip install -r /tmp/requirements.txt
+
+COPY templates /mon/templates
+COPY *.py /mon/
 
 COPY ./docker/entrypoint-monitor /entrypoint
 RUN chmod a+rx /entrypoint
-
 ENTRYPOINT [ "/entrypoint" ]
-
-RUN pip install -r /mon/requirements.txt
 
 WORKDIR /mon
 
