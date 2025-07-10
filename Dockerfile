@@ -20,10 +20,10 @@ FROM python:3.9-alpine
 RUN mkdir /mon
 COPY . /mon
 
-COPY ./docker/entrypoint-monitor /
-RUN chmod a+rx /mon/entrypoint-monitor
+COPY ./docker/entrypoint-monitor /entrypoint
+RUN chmod a+rx /entrypoint
 
-ENTRYPOINT [ "/entrypoint-monitor" ]
+ENTRYPOINT [ "/entrypoint" ]
 
 RUN pip install -r /mon/requirements.txt
 
