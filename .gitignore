@@ -4,6 +4,7 @@
 *.csv
 *.db
 fdmr-mon.cfg
+test.cfg
 _old
 venv
 bin
