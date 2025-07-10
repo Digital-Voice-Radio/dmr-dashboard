@@ -97,7 +97,9 @@ def mk_config(cfg_file):
 
     except Exception as err:
         sys.exit(f"We found an error when parsing config file:\n{err}\n{type(err)}")
-                
+   
+
+
 if __name__ == '__main__':
 
     logging.basicConfig(
@@ -106,4 +108,5 @@ if __name__ == '__main__':
         datefmt='%Y-%m-%d %H:%M:%S'
         )
 
-    print(mk_config("fdmr-mon_SAMPLE.cfg"))
+    print(mk_config("mon.cfg"))
+
