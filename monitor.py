@@ -4,7 +4,7 @@
 import logging
 from collections import deque
 from csv import DictReader as csv_dict_reader
-from json import load as jload
+from json import load as jload, dumps
 from os.path import getmtime
 from pathlib import Path
 from pickle import  loads
@@ -109,6 +109,13 @@ UPDT_FILES = (
     (CONF["FILES"]["TGID"], CONF["FILES"]["TGID_URL"], "talkgroup_ids")
 )
 
+# mqtt client
+mqttc = None
+
+def mqttpublish(topic, data):
+    if mqttc is not None:
+        mqttc.publish(f'{CONF["MQTT"]["TOPIC"}]/{topic}', dumps(data))
+        logger.debug(f'Published {data} to {topic}')
 
 # LONG VERSION - MAKES A FULL DICTIONARY OF INFORMATION BASED ON TYPE OF ALIAS FILE
 # BASED ON DOWNLOADS FROM RADIOID.NET
@@ -937,6 +944,27 @@ def process_message(_bmessage):
         # Import data from DB
         db2dict(int(p[6]), "subscriber_ids")
         db2dict(int(p[8]), "talkgroup_ids")
+
+        be = {
+            'direction': p[2],
+            'action': p[1],
+            'timestamp': _now,
+            'type': p[0],
+            'system': p[3],
+            'src_id': p[5],
+            'ts': p[7],
+            'tgid': p[8],
+            'tgalias': alias_tgid(int(p[8]), talkgroup_ids),
+            'sub': p[6],
+            'alias': alias_short(int(p[6]), subscriber_ids),
+        }
+        try:
+            be['duration'] = int(float(p[9]))
+        except:
+            pass
+
+        mqttpublish(f'monitor/{be["system"]}', be)
+
         if p[0] == "GROUP VOICE":
             rts_update(p)
             if p[2] == "TX" or p[5] in CONF["OPB_FLTR"]["OPB_FILTER"]:
@@ -950,6 +978,8 @@ def process_message(_bmessage):
                     f"TS: {p[7]} TGID: {p[8]:7.7s} {alias_tgid(int(p[8]), talkgroup_ids):17.17s} "
                     f"SUB: {p[6]:9.9s}; {alias_short(int(p[6]), subscriber_ids):18.18s} "
                     f"Time: {int(float(p[9]))}s")
+
+                mqttpublish('lastheard', be)
 
                 if int(float(p[9])) > 5:
                     # Get data for TG Count
@@ -1202,9 +1232,9 @@ if __name__ == "__main__":
     logger = create_logger(log_conf)
 
     logger.info("monitor.py starting up")
+    logger.info("\n\n\tDVDMR Monitor VK2WAY 2025\n\tFDMR-Monitor CS8ABG 2024\n\n")
     logger.info("\n\n\tCopyright (c) 2016-2022\n\tThe Regents of the K0USY Group. All rights "
-                "reserved.\n\n\tPython 3 port:\n\t2019 Steve Miller, KC1AWV <smiller@kc1awv.net>"
-                "\n\n\tFDMR-Monitor CS8ABG 2024\n\tDVDMR Monitor VK2WAY 2025\n\n")
+                "reserved.\n\n\tPython 3 port:\n\t2019 Steve Miller, KC1AWV <smiller@kc1awv.net>n\n")
 
     # Create an instance of MoniDB
     db_conn = MoniDB("/data/mon.db")
@@ -1246,12 +1276,11 @@ if __name__ == "__main__":
     cdb_loop = task.LoopingCall(cleaning_loop)
     cdb_loop.start(900, now=False).addErrback(error_hdl)
 
-    mqttc = None
     if CONF["MQTT"]["ENABLED"]:
         import paho.mqtt.client as mqtt
         mqttc = mqtt.Client()
         logger.info(f'Connecting to MQTT Broker on port {CONF["MQTT"]["BROKER_HOST"]}:{CONF["MQTT"]["BROKER_PORT"]}')
-        mqttc.connect(CONF["MQTT"]["BROKER_HOST"], CONF["MQTT"]["BROKER_PORT"], 60)
+        mqttc.connect(CONF["MQTT"]["BROKER_HOST"], int(CONF["MQTT"]["BROKER_PORT"]), 60)
 
         task.LoopingCall(mqttc.loop_misc).start(5)
         task.LoopingCall(mqttc.loop_read).start(0.1)
@@ -1265,7 +1294,7 @@ if __name__ == "__main__":
     reactor.connectTCP(
         CONF["CXN"]["IP"], CONF["CXN"]["PORT"], reportClientFactory())
 
-    logger.info(f'Starting webserver on port {CONF["WS"]["WS_PORT"]} with SSL = {CONF["WS"]["USE_SSL"]}')
+    logger.info(f'Starting webserver on port {CONF["WS"]["WS_PORT"]}')
 
     dashboard_server = dashboardFactory(f'ws://*:{CONF["WS"]["WS_PORT"]}')
     dashboard_server.protocol = dashboard
