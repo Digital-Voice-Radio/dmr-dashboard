@@ -17,7 +17,11 @@ from twisted.protocols.basic import NetstringReceiver
 from twisted.internet import reactor, task
 from twisted.internet.threads import deferToThread
 from twisted.internet.defer import inlineCallbacks
+from twisted.web.server import Site
+from twisted.web.static import File
+
 # Autobahn provides websocket service under Twisted
+from autobahn.twisted.resource import WebSocketResource
 from autobahn.twisted.websocket import WebSocketServerProtocol, WebSocketServerFactory
 # Web templating environment
 from jinja2 import Environment, PackageLoader, select_autoescape
@@ -114,7 +118,7 @@ mqttc = None
 
 def mqttpublish(topic, data):
     if mqttc is not None:
-        mqttc.publish(f'{CONF["MQTT"]["TOPIC"}]/{topic}', dumps(data))
+        mqttc.publish(f'{CONF["MQTT"]["TOPIC"]}/{topic}', dumps(data))
         logger.debug(f'Published {data} to {topic}')
 
 # LONG VERSION - MAKES A FULL DICTIONARY OF INFORMATION BASED ON TYPE OF ALIAS FILE
@@ -1278,7 +1282,9 @@ if __name__ == "__main__":
 
     if CONF["MQTT"]["ENABLED"]:
         import paho.mqtt.client as mqtt
-        mqttc = mqtt.Client()
+        from paho.mqtt.client import CallbackAPIVersion
+
+        mqttc = mqtt.Client(CallbackAPIVersion.VERSION2, client_id='monitor')
         logger.info(f'Connecting to MQTT Broker on port {CONF["MQTT"]["BROKER_HOST"]}:{CONF["MQTT"]["BROKER_PORT"]}')
         mqttc.connect(CONF["MQTT"]["BROKER_HOST"], int(CONF["MQTT"]["BROKER_PORT"]), 60)
 
@@ -1298,6 +1304,12 @@ if __name__ == "__main__":
 
     dashboard_server = dashboardFactory(f'ws://*:{CONF["WS"]["WS_PORT"]}')
     dashboard_server.protocol = dashboard
-    reactor.listenTCP(CONF["WS"]["WS_PORT"], dashboard_server)
+    ws = WebSocketResource(dashboard_server)
+
+    root = File("html")
+    root.putChild(b"ws", ws)
+    
+    site = Site(root)
+    reactor.listenTCP(CONF["WS"]["WS_PORT"], site)
 
     reactor.run()
