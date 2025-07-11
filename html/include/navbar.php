@@ -109,30 +109,9 @@
             }      
             ?>
             <select class="form-select" id="languageSelect">
-                <?php
-                if (isset($config['DASHBOARD']['LANGUAGE']) && !empty($config['DASHBOARD']['LANGUAGE'])) {
-                    $selectedLanguage = $config['DASHBOARD']['LANGUAGE'];
-                } else {
-                    $selectedLanguage = 'en';
-                }
-                $languages = array(
-                    'pt' => 'PT',
-                    'en' => 'EN',
-                    'es' => 'ES',
-                    'fr' => 'FR',
-                    'it' => 'IT',
-                    'nl' => 'NL',
-                    'de' => 'DE',
-                );
-                if (array_key_exists($selectedLanguage, $languages)) {
-                    $selectedLanguageName = $languages[$selectedLanguage];
-                    unset($languages[$selectedLanguage]);
-                }
-                echo '<option value="' . $selectedLanguage . '">' . $selectedLanguageName . '</option>';
-                foreach ($languages as $code => $name) {
-                    echo '<option value="' . $code . '">' . $name . '</option>';
-                }
-                ?>
+		{% for l in lang %}
+		<option value="{{ l.0 }}">{{l}}</option>
+                {% endfor %}
             </select>
             <li class="nav-item">
                 <a class="nav-link" href="#" role="button" id="toggle-mode">

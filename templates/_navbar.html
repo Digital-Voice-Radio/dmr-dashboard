@@ -1,0 +1,53 @@
+<nav class="main-header navbar navbar-expand-lg navbar-light navbar-dark text-sm">
+    <div class="container text-nowrap">
+        <a href="#" class="navbar-brand">
+		<img src="custom/logo_mini.png" alt="{{ conf.NAVTITLE }}" class="brand-image img-circle elevation-3"
+                style="opacity: .8">
+	<span class="brand-text font-weight-light">{{ conf.NAVTITLE }}</span>
+        </a>
+        <button class="navbar-toggler order-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+            aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse order-3" id="navbarCollapse">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="/" class="nav-link" id="nav_dash">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/systems" class="nav-link" id="nav_lnksys">Linked Systems</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/systemstg" class="nav-link" id="nav_statg">Static TGs</a>
+                </li>
+                <li class="nav-item">
+		    <a href="/openbridge" class="nav-link" id="nav_opb">Open Bridges</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/toptg" class="nav-link" id="nav_tptg">Top TGs</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/monitor" class="nav-link" id="nav_mon">Monitor</a>
+                </li>
+                <li class="nav-item dropdown dropdown-hover">
+                    <a id="dropdownSubMenu1" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">
+			    <span>{{ conf.NAV_LINK_NAME }}</span></a>
+
+                    <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
+			    {% for link in conf.LINKS %}
+			    <li><a target="_blank" href="{{ link.1 }}" class="dropdown-item">{{ link.0 }}</a></li>
+			{% endfor %}
+                    </ul>
+                </li>
+	    </ul>
+        <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="#" role="button" id="toggle-mode">
+                    <i class="fas fa-adjust"></i>
+                </a>
+            </li>
+            </ul>
+        </div>
+	<input type="hidden" id="languageSelect" value="en">
+    </div>
+</nav>

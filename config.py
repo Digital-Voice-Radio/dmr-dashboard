@@ -48,7 +48,7 @@ def mk_config(cfg_file):
             elif section == "MQTT":
                 CONF["MQTT"] = {
                         "BROKER_HOST": conf.get(section, "BROKER_HOST", fallback="127.0.0.1"),
-                        "BROKER_PORT": conf.get(section, "BROKER_PORT", fallback=1883),
+                        "BROKER_PORT": conf.getint(section, "BROKER_PORT", fallback=1883),
                         "ENABLED": conf.get(section, "ENABLED", fallback=False),
                         "TOPIC": conf.get(section, "TOPIC", fallback="dmr"),
                     }
@@ -89,7 +89,18 @@ def mk_config(cfg_file):
             elif section == "DEFAULT":
                 pass
             elif section == "DASHBOARD":
-                pass
+                CONF["DASHBOARD"] = {
+                        "NAVTITLE": conf.get(section, "NAVTITLE", fallback="DMR"),
+                        "DASHTITLE": conf.get(section, "DASHTITLE", fallback="Digital Voice DMR"),
+                        "SYSOP": conf.get(section, "SYSOP", fallback="N0CALL"),
+                        "NAV_LINK_NAME": conf.get(section, "NAV_LINK_NAME", fallback="Links"),
+                        "DISCORD": conf.get(section, "DISCORD", fallback=""),
+                }
+                CONF['DASHBOARD']['LINKS'] = []
+                links = conf.get(section, "LINKS", fallback="")
+                for link in links.split(","):
+                    t, h = link.split('|')
+                    CONF['DASHBOARD']['LINKS'].append((t,h))
 
             else:
                 logger.warning(f"Unrecognized section in config file: {section}.")

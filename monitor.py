@@ -1168,6 +1168,7 @@ class dashboard(WebSocketServerProtocol):
 
 
 class dashboardFactory(WebSocketServerFactory):
+
     def __init__(self, url):
         WebSocketServerFactory.__init__(self, url)
         self.clients = GROUPS
@@ -1188,6 +1189,8 @@ class dashboardFactory(WebSocketServerFactory):
     def broadcast(self, msg, group):
         logger.debug(f"broadcasting message to: {self.clients[group]}")
         #print(msg)
+        logger.info(group)
+        logger.info(self.clients)
         for client in self.clients[group]:
             client.sendMessage(msg.encode("utf8"))
             logger.debug(f"message sent to {client.peer}")
@@ -1227,13 +1230,28 @@ def cleaning_loop():
     for _table, _row_num in tbls:
         db_conn.clean_table(_table, _row_num)
 
-
-class Home(resource.Resource):
+class Page(resource.Resource):
 
     isLeaf = True
+    _template = None
+    _part = None
+
+    def __init__(self, *args, **kwargs):
+        self._template = kwargs.pop('template', None)
+        self._part = kwargs.pop('part', None)
+        super().__init__(*args, **kwargs)
 
     def render_GET(self, request):
-        return b"<html>Home</html>"
+        languages = [
+                ('en', 'EN'),
+                ('es', 'ES'),
+                ('pt', 'PT'),
+                ('fr', 'FR'),
+                ('de', 'DE'),
+                ('it', 'IT'),
+                ('nl', 'NL'),
+        ]
+        return self._template.render(conf=CONF["DASHBOARD"], page=self._part, lang=languages).encode('utf-8')
 
 class Metrics(resource.Resource):
 
@@ -1279,14 +1297,14 @@ if __name__ == "__main__":
         )
 
     # define tables template
-    itemplate = env.get_template("main_table.html")
-    ctemplate = env.get_template("lnksys_table.html")
-    otemplate = env.get_template("opb_table.html")
-    btemplate = env.get_template("bridge_table.html")
-    stemplate = env.get_template("statictg_table.html")
-    htemplate = env.get_template("lasthrd_log.html")
-    ttemplate = env.get_template("tgcount_table.html")
-
+    itemplate = env.get_template("include/main_table.html")
+    ctemplate = env.get_template("include/lnksys_table.html")
+    otemplate = env.get_template("include/opb_table.html")
+    btemplate = env.get_template("include/bridge_table.html")
+    stemplate = env.get_template("include/statictg_table.html")
+    htemplate = env.get_template("include/lasthrd_log.html")
+    ttemplate = env.get_template("include/tgcount_table.html")
+    tmpl_home = env.get_template("index.html")
 
     # Start update loop
     update_stats = task.LoopingCall(build_stats)
@@ -1315,7 +1333,7 @@ if __name__ == "__main__":
 
         mqttc = mqtt.Client(CallbackAPIVersion.VERSION2, client_id='monitor')
         logger.info(f'Connecting to MQTT Broker on port {CONF["MQTT"]["BROKER_HOST"]}:{CONF["MQTT"]["BROKER_PORT"]}')
-        mqttc.connect(CONF["MQTT"]["BROKER_HOST"], int(CONF["MQTT"]["BROKER_PORT"]), 60)
+        mqttc.connect(CONF["MQTT"]["BROKER_HOST"], CONF["MQTT"]["BROKER_PORT"], 60)
 
         task.LoopingCall(mqttc.loop_misc).start(5)
         task.LoopingCall(mqttc.loop_read).start(0.1)
@@ -1331,16 +1349,23 @@ if __name__ == "__main__":
 
     logger.info(f'Starting webserver on port {CONF["WS"]["WS_PORT"]}')
 
-    dashboard_server = dashboardFactory(f'ws://*:{CONF["WS"]["WS_PORT"]}')
+    dashboard_server = dashboardFactory(f'ws://*:{CONF["WS"]["WS_PORT"]}/ws')
     dashboard_server.protocol = dashboard
+
     ws = WebSocketResource(dashboard_server)
 
     root = resource.Resource()
-    root.putChild(b"", Home())
+    root.putChild(b"", Page(template=tmpl_home, part='home'))
     root.putChild(b"ws", ws)
     root.putChild(b"metrics", Metrics())
     root.putChild(b"static", File("static"))
     root.putChild(b"custom", File("custom"))
+    root.putChild(b"monitor", Page(template=tmpl_home, part='monitor'))
+    root.putChild(b"systems", Page(template=tmpl_home, part='systems'))
+    root.putChild(b"systemstg", Page(template=tmpl_home, part='systemstg'))
+    root.putChild(b"openbridge", Page(template=tmpl_home, part='openbridge'))
+    root.putChild(b"toptg", Page(template=tmpl_home, part='toptg'))
+    root.putChild(b"bridges", Page(template=tmpl_home, part='bridges'))
 
     site = Site(root)
     reactor.listenTCP(CONF["WS"]["WS_PORT"], site)

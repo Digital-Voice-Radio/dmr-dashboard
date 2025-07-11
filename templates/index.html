@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ conf.DASHTITLE }}</title>
+  <link rel="icon" type="image/png" href="img/favicon.ico">
+  <meta name="description" content="{{ conf.DASHTITLE }}">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <link rel="stylesheet" href="static/plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <link rel="stylesheet" href="static/plugins/adminlte/css/adminlte.min.css">
+  <link rel="stylesheet" href="static/css/overrides.css">
+  <style>
+    @media (min-width: 768px) { .table-responsive { overflow-x: auto; } }
+    @media (max-width: 767px) { .table-responsive { zoom: 0.5; } }
+  </style>
+</head>
+
+<body class="hold-transition dark-mode layout-top-nav layout-navbar-fixed text-sm layout-footer-fixed" style="zoom: 85%;">
+  <div class="wrapper">
+    <?php if ($display_preloader): ?>
+    <div class="preloader flex-column justify-content-center align-items-center">
+      <img class="animation__wobble" src="custom/logo_mini.png" alt="" height="60" width="60">
+    </div>
+    <?php endif; ?>
+
+    {% include "_navbar.html" %}
+
+    <div class="content-wrapper">
+      <div class="content-header">
+        <div class="container">
+          <div class="row mb-2 justify-content-center">
+            <div class="col-sm-auto">
+		    <img src="custom/logo.png" alt="{{ conf.DASHTITLE }}" width="100%">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="content">
+	      {% include "part/%s.html" % page %}
+        <div><br></div>
+      </div>
+    </div>
+    <footer class="main-footer text-sm">
+	    {% include "_footer.html" %}
+    </footer>
+  </div>
+  <script src="static/plugins/jquery/jquery.min.js"></script>
+  <script src="static/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="static/scripts/mode.js"></script>
+  <script src="static/plugins/adminlte/js/adminlte.min.js"></script>
+  <script src="static/scripts/monitor.js"></script>
+</body>
+
+</html>

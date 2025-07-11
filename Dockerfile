@@ -23,6 +23,11 @@ COPY requirements.txt /tmp
 RUN pip install -r /tmp/requirements.txt
 
 COPY templates /mon/templates
+COPY static /mon/static
+
+VOLUME /mon/custom
+COPY custom /mon/custom
+
 COPY *.py /mon/
 
 COPY ./docker/entrypoint-monitor /entrypoint
