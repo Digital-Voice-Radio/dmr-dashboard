@@ -9,9 +9,68 @@ Project lineage:
 * HBMonitor v2 for DMR Server based on HBlink/FreeDMR https://github.com/sp2ong/HBMonv2 
 * Python 3 implementation of N0MJS HBmonitor for HBlink https://github.com/kc1awv/hbmonitor3 
 
+## Significant Changes
+
+There have been significant changes from the cs8abg version:
+
+* Websocket server is now a Web/Websocket server (python twisted)
+* PHP Code entirely deprecated; templates now served by python twisted web.
+* Translations have been removed in order to properly implemenet.
+
 ## Installation
 
-Refer to the Digital Voice DMR setup guides at https://dvdmr.org/docs/
+Docker containers are the only supported installation method for the Digital Voice
+DMR stack.
+
+Instructions for installing a master server, bridges and dashboards can be found at the Digital Voice DMR setup guides at https://dvdmr.org/docs/
+
+## Example docker-compose
+
+```
+
+version: '2.4' 
+services:
+
+    monitor:
+        container_name: monitor
+        image: 'docker.dvdmr.org/digitalvoice/monitor:latest'
+        restart: "unless-stopped"
+        volumes:
+            - '/data/master/:/config'
+            - '/data/master/:/data'
+            - '/data/master/custom:/mon/custom'
+            - '/data/log/:/log'
+        ports:
+          - 9000:9000/tcp
+        environment:
+          - MONITOR_CONFIG=/config/mon.cfg
+```
+
+* Configuration can be mounted anywhere but is expected in `/config/mon.cfg` by default.
+* Data is stored in the `/data` mount by default, which can be over-ridden in mon.cfg.
+* Logging is stored in the `/log` mount by default, which can be over-ridden in mon.cfg.
+* Custom images and CSS are found in the `/mon/custom` mount
+
+## nginx Configuration
+
+Example nginx configuration
+
+```
+upstream noc-master-backend {
+        server 127.0.0.1:9000;
+}
+
+server {
+        server_name master.noc.dvdmr.org;
+
+        location / {
+            proxy_pass http://noc-master-backend/;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+        }
+}
+```
 
 
 ## Flags
