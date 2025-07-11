@@ -9,6 +9,7 @@ services:
         volumes:
             - '/data/master/:/config'
             - '/data/master/:/data'
+            - '/data/master/custom:/mon/custom'
             - '/data/log/:/log'
         ports:
           - 9000:9000/tcp # websocket port
