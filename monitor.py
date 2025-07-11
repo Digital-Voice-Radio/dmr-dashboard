@@ -19,6 +19,7 @@ from twisted.internet.threads import deferToThread
 from twisted.internet.defer import inlineCallbacks
 from twisted.web.server import Site
 from twisted.web.static import File
+from twisted.web import server, resource
 
 # Autobahn provides websocket service under Twisted
 from autobahn.twisted.resource import WebSocketResource
@@ -761,13 +762,8 @@ def render_fromdb(_tbl, _row_num, _snd=False):
     except Exception as err:
         logger.error(f"render_fromdb: {err}, {type(err)}")
 
-
-def build_tgstats():
-    if CONFIG and CTABLE:
-        CTABLE["SERVER"] ={"TS1":[],"TS2":[]}
+def get_occupied_systems():
         tmp_dict = {}
-        srv_info = 0
-        # make a list with occupied systems
         for system in CTABLE["MASTERS"]:
             if not CTABLE["MASTERS"][system]["PEERS"]:
                 continue
@@ -778,6 +774,17 @@ def build_tgstats():
                     tmp_dict[system] = [peer]
                 else:
                     tmp_dict[system].append(peer)
+        return tmp_dict
+
+
+def build_tgstats():
+    if CONFIG and CTABLE:
+        CTABLE["SERVER"] ={"TS1":[],"TS2":[]}
+        tmp_dict = {}
+        srv_info = 0
+        # make a list with occupied systems
+
+        tmp_dict = get_occupied_systems()
 
         # Get the static TG of the server
         for system in CONFIG:
@@ -1221,6 +1228,28 @@ def cleaning_loop():
         db_conn.clean_table(_table, _row_num)
 
 
+class Home(resource.Resource):
+
+    isLeaf = True
+
+    def render_GET(self, request):
+        return b"<html>Home</html>"
+
+class Metrics(resource.Resource):
+
+    isLeaf = True
+
+    def render_GET(self, request):
+        output = ""
+        stats = {}
+        stats['peer_count'] = len(CTABLE["PEERS"])
+
+        for k,v in stats.items():
+            output = f"{output}{k} {v}\n"
+
+        return output.encode('utf-8')
+
+
 #######################################################################
 if __name__ == "__main__":
     # Create logger
@@ -1306,9 +1335,13 @@ if __name__ == "__main__":
     dashboard_server.protocol = dashboard
     ws = WebSocketResource(dashboard_server)
 
-    root = File("html")
+    root = resource.Resource()
+    root.putChild(b"", Home())
     root.putChild(b"ws", ws)
-    
+    root.putChild(b"metrics", Metrics())
+    root.putChild(b"static", File("static"))
+    root.putChild(b"custom", File("custom"))
+
     site = Site(root)
     reactor.listenTCP(CONF["WS"]["WS_PORT"], site)
 
