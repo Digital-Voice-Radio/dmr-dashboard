@@ -57,6 +57,7 @@ OPCODE = {
 import os
 config_file = os.environ.get('MONITOR_CONFIG', '/config/mon.cfg')
 CONF = mk_config(config_file)
+print(CONF)
 
 # Global Variables:
 CONFIG = {}
