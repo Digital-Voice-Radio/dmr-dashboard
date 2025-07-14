@@ -18,15 +18,29 @@
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 ###############################################################################
 
-
+cd /mon
 echo ' _                                     '
 echo '| \ o  _  o _|_  _. | \  / _  o  _  _  '
 echo '|_/ | (_| |  |_ (_| |  \/ (_) | (_ (/_ '
 echo '       _|                              '
+echo
+export MONITOR_CONFIG=${MONITOR_CONFIG:=/mon/mon.cfg}
+echo Monitor Configuration: ${MONITOR_CONFIG}
+echo Data Directory       : /data
+echo
 
-echo export MONITOR_WS=${MONTIOR_WS} >> /etc/apache2/envvars
-echo export MASTER_API=${MASTER_API} >> /etc/apache2/envvars
+if [ ! -d /data ]
+then
+	echo No Data Directory available at /data for my database.
+	exit 99
+fi
+if [ ! -f /data/mon.db ]
+then
+	echo Database does not exist.  Creating tables.
+	python /mon/mon_db.py
+fi
 
-exec docker-php-entrypoint apache2-foreground
+cd /mon
+python3 monitor.py
 
 

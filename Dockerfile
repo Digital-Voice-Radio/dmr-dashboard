@@ -30,7 +30,7 @@ COPY custom /mon/custom
 
 COPY *.py /mon/
 
-COPY ./docker/entrypoint-monitor /entrypoint
+COPY /docker-entrypoint /entrypoint
 RUN chmod a+rx /entrypoint
 ENTRYPOINT [ "/entrypoint" ]
 
