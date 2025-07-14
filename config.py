@@ -16,7 +16,8 @@ def mk_config(cfg_file):
         "OPB_FLTR": {},
         "FILES": {},
         "LOG": {},
-        "WS": {}
+        "WS": {},
+        "MQTT": { "ENABLED": False },
         }
     
     default_values = {
@@ -45,11 +46,17 @@ def mk_config(cfg_file):
                     "IP": conf.get(section, "IP", fallback="127.0.0.1"),
                     "PORT": conf.getint(section, "PORT", fallback=4321),
                     }
+            elif section == "FDMR CONNECTION":
+                logger.error(f"Deprecated Configuration Section {section}. Please update to MASTER.")
+                CONF["CXN"] = {
+                    "IP": conf.get(section, "FD_IP", fallback="127.0.0.1"),
+                    "PORT": conf.getint(section, "FD_PORT", fallback=4321),
+                    }
             elif section == "MQTT":
                 CONF["MQTT"] = {
                         "BROKER_HOST": conf.get(section, "BROKER_HOST", fallback="127.0.0.1"),
                         "BROKER_PORT": conf.getint(section, "BROKER_PORT", fallback=1883),
-                        "ENABLED": conf.get(section, "ENABLED", fallback=False),
+                        "ENABLED": conf.getboolean(section, "ENABLED", fallback=False),
                         "TOPIC": conf.get(section, "TOPIC", fallback="dmr"),
                     }
             elif section == "OPB FILTER":
