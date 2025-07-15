@@ -72,6 +72,33 @@ server {
 }
 ```
 
+## Apache Virtual Host Configuration
+Example of `/etc/achache2/sites-available/host.conf` configuration
+```
+<VirtualHost *:80>
+        ServerAdmin webmaster@localhost
+        ServerName dmr.dvau.au
+        ProxyPass "/ws" "ws://localhost:9000/ws"
+        ProxyPass / http://localhost:9000/
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+        RewriteEngine On
+
+        RewriteCond %{HTTP:Upgrade} =websocket [NC]
+</VirtualHost>
+```
+## Caddy Reverse Proxy example
+Example of Caddyfile configuration
+```
+example.com {
+        root *
+        encode gzip
+        reverse_proxy 127.0.0.1:80
+
+}
+```
 
 ## Flags
 
