@@ -49,8 +49,8 @@ def mk_config(cfg_file):
             elif section == "FDMR CONNECTION":
                 logger.error(f"Deprecated Configuration Section {section}. Please update to MASTER.")
                 CONF["CXN"] = {
-                    "IP": conf.get(section, "FD_IP", fallback="127.0.0.1"),
-                    "PORT": conf.getint(section, "FD_PORT", fallback=4321),
+                    "IP": conf.get(section, "FDMR_IP", fallback="127.0.0.1"),
+                    "PORT": conf.getint(section, "FDMR_PORT", fallback=4321),
                     }
             elif section == "MQTT":
                 CONF["MQTT"] = {
