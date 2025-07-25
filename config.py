@@ -23,7 +23,8 @@ def mk_config(cfg_file):
     default_values = {
         "LOCAL_SUB_FILE": "",
         "LOCAL_PEER_FILE": "",
-        "LOCAL_TGID_FILE": ""
+        "LOCAL_TGID_FILE": "",
+        "NETWORK_PEER_FILE": "",
         }
 
     try:
@@ -74,8 +75,10 @@ def mk_config(cfg_file):
                     "LCL_SUBS": conf.get(section, "LOCAL_SUB_FILE"),
                     "LCL_PEER": conf.get(section, "LOCAL_PEER_FILE"),
                     "LCL_TGID": conf.get(section, "LOCAL_TGID_FILE"),
+                    "NET_PEER": conf.get(section, "NETWORK_PEER_FILE"),
                     "RELOAD_TIME": conf.getint(section, "RELOAD_TIME", fallback=7) * 864000,
                     "PEER_URL": conf.get(section, "PEER_URL"),
+                    "NET_PEER_URL": conf.get(section, "NETWORK_PEER_URL"),
                     "SUBS_URL": conf.get(section, "SUBSCRIBER_URL"),
                     "TGID_URL": conf.get(section, "TGID_URL")
                     }

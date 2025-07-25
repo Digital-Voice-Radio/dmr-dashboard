@@ -111,6 +111,7 @@ TGID_FIELDS  = ("id", "callsign")
 
 UPDT_FILES = (
     (CONF["FILES"]["PEER"], CONF["FILES"]["PEER_URL"], "peer_ids"),
+    (CONF["FILES"]["NET_PEER"], CONF["FILES"]["NET_PEER_URL"], "peer_ids"),
     (CONF["FILES"]["SUBS"], CONF["FILES"]["SUBS_URL"], "subscriber_ids"),
     (CONF["FILES"]["TGID"], CONF["FILES"]["TGID_URL"], "talkgroup_ids")
 )
@@ -214,6 +215,8 @@ def update_local(_table=None):
     updt_files = []
     if _table == "peer_ids" or not _table and CONF["FILES"]["LCL_PEER"]:
         updt_files.append((CONF["FILES"]["LCL_PEER"], "peer_ids"))
+    if _table == "peer_ids" or not _table and CONF["FILES"]["LCL_PEER"]:
+        updt_files.append((CONF["FILES"]["NET_PEER"], "peer_ids"))
     if _table == "subscriber_ids" or not _table and CONF["FILES"]["LCL_SUBS"]:
         updt_files.append((CONF["FILES"]["LCL_SUBS"], "subscriber_ids"))
     if _table == "talkgroup_ids" or not _table and CONF["FILES"]["LCL_TGID"]:
